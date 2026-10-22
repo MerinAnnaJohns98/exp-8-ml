@@ -1,0 +1,64 @@
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score
+ 
+print("Loading MNIST dataset...")
+X,y=fetch_openml(
+    'mnist_784',
+    version=1,
+    return_X_y=True,
+    as_frame=False
+)
+X=X.astype('float32')
+y=y.astype('int')
+print("Dataset Loaded Successfulyy")
+print("Total samples:",X.shape[0])
+print("Number of features:",X.shape[1])
+Loading MNIST dataset...
+Dataset Loaded Successfulyy
+Total samples: 70000
+Number of features: 784
+X=X/255.0
+X=X[:20000]
+y=y[:20000]
+X_train,X_test,y_train,y_test=train_test_split(
+    X,y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+print("\nTraining Samples :",X_train.shape[0])
+print("Testing samples:",X_test.shape[0])
+Training Samples : 16000
+Testing samples: 4000
+activations=['logistic','relu','tanh']
+results={}
+training_times={}
+accuracies={}
+for activation in activations:
+    print("\n--------------------------------------")
+    print("Training with:",activation)
+    print("\n--------------------------------------")
+    start_time=time.time()
+    model=MLPClassifier(
+    hidden_layer_sizes=(128,),
+    activation=activation,
+    solver='adam',
+    max_iter=100,
+    batch_size=128,
+    random_state=42,
+    verbose=False
+    )
+model.fit(X_train,y_train)
+end_time=time.time()
+training_time=end_time-start_time
+y_pred=model.predict(X_test)
+accuracy+accuracy_score(y_test,y_pred)
+results[activtion]=model
+training_times[activation]=training_time
+accuracies[activatiobn]=accuracy*100
+print("Training time:{:.2f} seconds".format(
